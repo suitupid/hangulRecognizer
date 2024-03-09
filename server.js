@@ -23,7 +23,8 @@ io.on("connection", function(socket) {
 		matches = reqData.match(/^data:.+\/(.+);base64,(.*)$/);
 		fs.writeFileSync(
 			"./python/image/"+socket.id+"."+matches[1],
-			Buffer.from(matches[2], "base64")                                                 		);
+			Buffer.from(matches[2], "base64")
+        );
 		let rst = require("child_process").spawn(
 			"python3",
 			[
