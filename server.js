@@ -1,8 +1,9 @@
 let express = require("express");
 let app = express();
-let server = require("http").createServer(app);
+let http = require("http")
+let server = http.createServer(app);
 let fs = require("fs");
-var io = require("socket.io")(server);
+let io = require("socket.io")(server);
 
 app.use("/css", express.static("css"));
 app.use("/js", express.static("js"));
@@ -25,18 +26,17 @@ io.on("connection", function(socket) {
 			"./python/image/"+socket.id+"."+matches[1],
 			Buffer.from(matches[2], "base64")
 		);
-		let rst = require("child_process").spawn(
-			"python3",
-			[
-				"python/inference.py",
-				"python/image/"+socket.id+"."+matches[1],
-				"python/model/letterCnnClassifier.pt",
-				"python/data/onehotEncoder.bin"
-			]
-		);
-		rst.stdout.on("data", function(respData) {
-			io.emit("response_"+socket.id, respData.toString());
-			console.log("Responsed: "+socket.id+"("+address+")");
-		});
+        url = 'http://localhost:8000/predict/'+socket.id+"."+matches[1];
+        http.get(url, function(resp) {
+            let respData = '';
+            resp.on('data', function(chunk) {
+                respData += chunk
+            });
+            resp.on('end', function() {
+                respData = respData.replace(/"/g, '');
+                io.emit("response_"+socket.id, respData.toString());
+                console.log("Responsed: "+socket.id+"("+address+")");
+            });
+        });
 	});
 });
