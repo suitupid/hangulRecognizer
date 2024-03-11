@@ -3,7 +3,7 @@
 
 import os
 import json
-from joblib import dump
+import joblib
 
 import cv2
 import numpy as np
@@ -69,4 +69,4 @@ json.dump(
 
 samples = np.unique(np.array(data_info)[:,1])
 onehot_encoder = OneHotEncoder(sparse_output=False).fit(samples.reshape(-1, 1))
-dump(onehot_encoder, open('data/onehotEncoder.bin','wb'))
+joblib.dump(onehot_encoder, open('data/onehotEncoder.bin','wb'))
