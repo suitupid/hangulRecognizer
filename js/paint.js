@@ -112,7 +112,6 @@ if(clearBtn){
 	clearBtn.addEventListener("click", handleClearClick, false);
 }
 function handleGoClick() {
-	resultText.innerHTML = "Hmm..";
 	socket.emit("request", canvas.toDataURL("image/png"));
 	console.log("Requested.");
 }
