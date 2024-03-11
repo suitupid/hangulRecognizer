@@ -14,6 +14,11 @@ from model import CnnModel
 
 app = FastAPI()
 
+model = CnnModel()
+model.load_state_dict(torch.load('model/hangulCnnClassifier.pt'))
+model.eval()
+onehot_encoder = joblib.load('data/onehotEncoder.bin')
+
 @app.get("/predict/{image_name}")
 def read_predict(image_name: str):
     image_path = 'image/'+image_name
@@ -27,11 +32,7 @@ def read_predict(image_name: str):
     test = cv2.copyMakeBorder(test, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=[0,0,0])
     test = test.reshape(1, 1, 64, 64)
     test = np.array(test, dtype=np.float32)
-    
-    model = CnnModel()
-    model.load_state_dict(torch.load('model/hangulCnnClassifier.pt'))
-    model.eval()
-    onehot_encoder = joblib.load('data/onehotEncoder.bin')
+
     result = model(torch.from_numpy(test)).detach().numpy()
     result = onehot_encoder.inverse_transform(result)[0][0]
     return result
