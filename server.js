@@ -23,8 +23,8 @@ io.on("connection", function(socket) {
         console.log("Get Request: "+socket.id+"("+address+")");
         matches = reqData.match(/^data:.+\/(.+);base64,(.*)$/);
         fs.writeFileSync(
-        "./python/image/"+socket.id+"."+matches[1],
-        Buffer.from(matches[2], "base64")
+            "./python/image/"+socket.id+"."+matches[1],
+            Buffer.from(matches[2], "base64")
         );
         url = 'http://127.0.0.1:8000/predict/'+socket.id+"."+matches[1];
         http.get(url, function(resp) {
