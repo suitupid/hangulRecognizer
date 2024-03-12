@@ -19,13 +19,12 @@ server.listen(3000, function() {
 io.on("connection", function(socket) {
     address = socket.request.connection.remoteAddress;
     console.log("Connected: "+socket.id+"("+address+")");
-    socket.on("request", (reqData)=>{
+    socket.on("request", function(reqData) {
         console.log("Get Request: "+socket.id+"("+address+")");
         matches = reqData.match(/^data:.+\/(.+);base64,(.*)$/);
-        fs.writeFileSync(
-            "./python/image/"+socket.id+"."+matches[1],
-            Buffer.from(matches[2], "base64")
-        );
+        filePath = "python/image/"+socket.id+"."+matches[1];
+        imgBuffer = Buffer.from(matches[2], "base64");
+        fs.writeFileSync(filePath, imgBuffer);
         url = 'http://127.0.0.1:8000/predict/'+socket.id+"."+matches[1];
         http.get(url, function(resp) {
             let respData = '';
@@ -35,8 +34,9 @@ io.on("connection", function(socket) {
             resp.on('end', function() {
                 respData = respData.replace(/"/g, '');
                 io.emit("response_"+socket.id, respData.toString());
+                fs.rmSync(filePath);
                 console.log("Responsed: "+socket.id+"("+address+")");
             });
-        });
+        }).end();
     });
 });

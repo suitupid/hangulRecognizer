@@ -10,7 +10,7 @@ app = FastAPI()
 tool = Inference()
 
 @app.get("/predict/{image_name}")
-def read_predict(image_name: str):
+def read_predict(image_name):
     image_path = 'image/'+image_name
     rgb = tool.preprocess(image_path)
     result = tool.predict(rgb)
