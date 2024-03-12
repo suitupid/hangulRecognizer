@@ -1,19 +1,19 @@
 let express = require("express");
 let app = express();
-let http = require("http")
+let http = require("http");
 let server = http.createServer(app);
-let fs = require("fs");
 let io = require("socket.io")(server);
+let fs = require("fs");
 
 app.use("/css", express.static("css"));
 app.use("/js", express.static("js"));
 
 app.get("/", function(req, res) {
- 	res.sendFile(__dirname + "/index.html");
+    res.sendFile(__dirname + "/index.html");
 });
 
 server.listen(3000, function() {
-	console.log("Listening on port 3000");
+    console.log("Listening on port 3000");
 });
 
 io.on("connection", function(socket) {
