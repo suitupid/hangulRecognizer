@@ -6,7 +6,7 @@ window.onresize = resizeCanvas;
 function resizeCanvas(){
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 15;
 }
 
 function loadInit() {
