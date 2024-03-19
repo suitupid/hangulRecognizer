@@ -41,7 +41,7 @@ def func(item):
     row_max, col_max = \
         (rgb.shape[0]-row_min, rgb.shape[1]-col_min)
     rgb = rgb[row_min:row_max, col_min:col_max]
-    rgb = cv2.threshold(rgb, 235, 255, cv2.THRESH_BINARY_INV)[1]
+    _, rgb = cv2.threshold(rgb, 235, 255, cv2.THRESH_BINARY_INV)
     col_min, row_min, height, width = cv2.boundingRect(rgb)
     col_max, row_max = (col_min+height, row_min+width)
     rgb = rgb[row_min:row_max, col_min:col_max]
