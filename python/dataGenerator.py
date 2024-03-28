@@ -8,13 +8,12 @@ import joblib
 import cv2
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OnehotEncoder
 from multiprocessing import Process, Manager, Pool
 from functools import partial
 
-data_info_path = 'data/handwriting/raw/handwriting_data_info_clean.json'
-if not os.path.isdir('data/handwriting/final'):
-    os.mkdir('data/handwriting/final')
+data_info_path = 'data/raw/handwriting_data_info_clean.json'
+os.mkdir('data/final') if not os.path.isdir('data/final') else False
 
 target = open('data/targetSyllable.txt','r').read()
 target = target.replace('\n', '').replace(' ', '')
@@ -25,7 +24,7 @@ data_info_raw = [
     if item['attributes']['type']=='글자(음절)'
 ]
 data_info_raw = [
-    [f"data/handwriting/raw/{item['image_id']}.png", item['text']]
+    [f"data/raw/{item['image_id']}.png", item['text']]
     for item in data_info_raw
 ]
 data_info_raw = [
@@ -52,8 +51,6 @@ def func(item):
         rgb = np.array(rgb, dtype=np.float32)
         save_path = path.replace('/raw/', '/final/')
         cv2.imwrite(save_path, rgb)
-        # from matplotlib import pyplot as plt
-        # plt.imshow(rgb, cmap='gray')
         return [save_path, label]
 pool = Pool(30)
 data_info = pool.map(func, data_info_raw)
