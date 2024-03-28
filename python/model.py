@@ -3,7 +3,6 @@
 
 from torch import nn
 import lightning as L
-from torch.nn import functional as F
 from torch.optim import Adam
 
 class CnnModel(L.LightningModule):
@@ -45,14 +44,16 @@ class CnnModel(L.LightningModule):
     def training_step(self, batch):
         x, y = batch
         y_hat = self.forward(x)
-        train_loss = F.cross_entropy(y_hat, y)
+        y = y.reshape(-1)
+        train_loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log('train_loss', train_loss, prog_bar=True)
         return train_loss
 
     def validation_step(self, batch):
         x, y = batch
         y_hat = self.forward(x)
-        val_loss = F.cross_entropy(y_hat, y)
+        y = y.reshape(-1)
+        val_loss = nn.CrossEntropyLoss()(y_hat, y)
         self.log('val_loss', val_loss, prog_bar=True)
         return val_loss
 
