@@ -6,12 +6,12 @@ from fastapi import FastAPI
 
 from inference import Inference
 
-app = FastAPI()
 tool = Inference()
+app = FastAPI()
 
 @app.get("/predict/{image_name}")
-def read_predict(image_name):
+def get_result(image_name):
     image_path = 'image/'+image_name
-    rgb = tool.preprocess(image_path)
-    result = tool.predict(rgb)
+    img = tool.preprocess(image_path)
+    result = tool.predict(img)
     return result

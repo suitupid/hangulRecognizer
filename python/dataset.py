@@ -16,7 +16,7 @@ class CustomDataset(Dataset):
         x = cv2.imread(fpath, cv2.IMREAD_GRAYSCALE)
         x = x / 255
         x = np.float32(x)
-        x = x.reshape(1, 128, 128)
+        x = x.reshape(1, 64, 64)
         x = torch.tensor(x)
         y = torch.tensor(label)
         return x, y
