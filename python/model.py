@@ -1,15 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf8 -*-
 
+import joblib
+
 from torch import nn
-import lightning as L
 from torch.optim import Adam
+import lightning as L
 
 class CnnModel(L.LightningModule):
 
     def __init__(self):
         super().__init__()
-
+        encoder = joblib.load('data/labelEncoder.bin')
+        num_classes = len(encoder.classes_)
         self.model = nn.Sequential(
             nn.Conv2d(1, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
@@ -35,7 +38,7 @@ class CnnModel(L.LightningModule):
             nn.BatchNorm1d(512),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.Linear(512, 2350)
+            nn.Linear(512, num_classes)
         )
 
     def forward(self, x):

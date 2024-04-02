@@ -24,8 +24,8 @@ train, valid = train_test_split(
 
 train_dataset = CustomDataset(train)
 valid_dataset = CustomDataset(valid)
-train_dataloader = DataLoader(train_dataset, batch_size=8, num_workers=8)
-valid_dataloader = DataLoader(valid_dataset, batch_size=8, num_workers=8)
+train_dataloader = DataLoader(train_dataset, batch_size=32, num_workers=64)
+valid_dataloader = DataLoader(valid_dataset, batch_size=32, num_workers=64)
 
 model = CnnModel()
 trainer = Trainer(
