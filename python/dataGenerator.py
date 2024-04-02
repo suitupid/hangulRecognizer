@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from multiprocessing import Process, Manager, Pool
-from functools import partial
 
 data_info_path = 'data/raw/handwriting_data_info_clean.json'
 os.mkdir('data/final') if not os.path.isdir('data/final') else False
@@ -33,7 +32,7 @@ data_info = [
     if item[1] in target
 ]
 
-def prepare_data(item, encoder):
+def func(item):
     fpath, label = item
     img = cv2.imread(fpath, cv2.IMREAD_GRAYSCALE)
     row_min, col_min = round(img.shape[0]*0.05), round(img.shape[1]*0.05)
@@ -48,11 +47,11 @@ def prepare_data(item, encoder):
         img = cv2.copyMakeBorder(img, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=[0])
         img = cv2.cvtColor(img, cv2.IMREAD_COLOR)
         save_path = fpath.replace('/raw/', '/final/')
-        cv2.imwrite(save_path, img)
+        # cv2.imwrite(save_path, img)
+        encoder = joblib.load('data/labelEncoder.bin')
         label = encoder.transform([label]).tolist()
         return [save_path, label]
 pool = Pool(5)
-func = partial(prepare_data, encoder=label_encoder)
 data_info = pool.map(func, data_info)
 pool.close()
 pool.join()
