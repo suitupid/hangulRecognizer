@@ -18,7 +18,7 @@
   - fastapi
 * 학습 모델 구축 
   - 실제 서비스에서 입력되는 이미지와 비슷하게 학습용 이미지 전처리
-  - CNN 구조 활용
+  - ResNet 구조를 간결화하여 적용
   - pytorch lightning
 ### 서비스 URL
 http://suitupid.cafe24.com:3000
