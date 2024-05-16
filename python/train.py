@@ -12,7 +12,7 @@ from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.callbacks import RichProgressBar
 
 from dataset import CustomDataset
-from model import CnnModel
+from model import CustomResNet
 
 data = json.loads(open('data/dataInfo.json','r').read())
 
@@ -27,7 +27,7 @@ valid_dataset = CustomDataset(valid)
 train_dataloader = DataLoader(train_dataset, batch_size=32, num_workers=64)
 valid_dataloader = DataLoader(valid_dataset, batch_size=32, num_workers=64)
 
-model = CnnModel()
+model = CustomResNet()
 trainer = Trainer(
 	max_epochs=100, accelerator='gpu',
 	logger=False, enable_checkpointing=False,
@@ -38,4 +38,4 @@ trainer = Trainer(
 )
 trainer.fit(model, train_dataloader, valid_dataloader)
 
-# torch.save(model.state_dict(), 'model/hangulCnnClassifier.pt')
+torch.save(model.state_dict(), 'model/hangulClassifier.pt')

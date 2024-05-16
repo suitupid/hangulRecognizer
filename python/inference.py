@@ -8,15 +8,15 @@ import cv2
 import numpy as np
 import torch
 
-from model import CnnModel
+from model import CustomResNet
 
 class Inference():
 
     def __init__(self):
         super().__init__()
 
-        self.model = CnnModel()
-        self.model.load_state_dict(torch.load('model/hangulCnnClassifier.pt'))
+        self.model = CustomResNet()
+        self.model.load_state_dict(torch.load('model/hangulClassifier.pt'))
         self.model.eval()
         self.encoder = joblib.load('data/labelEncoder.bin')
 
