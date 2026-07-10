@@ -14,6 +14,7 @@ from lightning.pytorch.callbacks import RichProgressBar
 from dataset import CustomDataset
 from model import CustomResNet
 
+
 data = json.loads(open('data/dataInfo.json','r').read())
 
 train, valid = train_test_split(
@@ -24,8 +25,8 @@ train, valid = train_test_split(
 
 train_dataset = CustomDataset(train)
 valid_dataset = CustomDataset(valid)
-train_dataloader = DataLoader(train_dataset, batch_size=32, num_workers=64)
-valid_dataloader = DataLoader(valid_dataset, batch_size=32, num_workers=64)
+train_dataloader = DataLoader(train_dataset, batch_size=32, num_workers=8)
+valid_dataloader = DataLoader(valid_dataset, batch_size=32, num_workers=8)
 
 model = CustomResNet()
 trainer = Trainer(
