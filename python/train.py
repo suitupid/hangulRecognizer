@@ -4,7 +4,6 @@
 import json
 import joblib
 
-from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.data import DataLoader
 from lightning import Trainer
@@ -12,31 +11,23 @@ from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.callbacks import RichProgressBar
 
 from dataset import CustomDataset
-from model import CustomResNet
+from model import CustomNetwork
 
 
 data = json.loads(open('data/dataInfo.json','r').read())
 
-train, valid = train_test_split(
-    data,
-    test_size=0.05, shuffle=True,
-    stratify=[item[1] for item in data]
-)
+dataset = CustomDataset(data)
+dataloader = DataLoader(dataset, batch_size=32, num_workers=8)
 
-train_dataset = CustomDataset(train)
-valid_dataset = CustomDataset(valid)
-train_dataloader = DataLoader(train_dataset, batch_size=32, num_workers=8)
-valid_dataloader = DataLoader(valid_dataset, batch_size=32, num_workers=8)
-
-model = CustomResNet()
+model = CustomNetwork()
 trainer = Trainer(
-	max_epochs=100, accelerator='gpu',
+	max_epochs=50, accelerator='gpu',
 	logger=False, enable_checkpointing=False,
 	callbacks=[
-        EarlyStopping(monitor='val_loss', patience=10),
+        EarlyStopping(monitor='train_loss', patience=10),
         RichProgressBar()
     ]
 )
-trainer.fit(model, train_dataloader, valid_dataloader)
+trainer.fit(model, dataloader)
 
 torch.save(model.state_dict(), 'model/hangulClassifier.pt')
