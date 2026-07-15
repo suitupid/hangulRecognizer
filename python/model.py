@@ -3,8 +3,9 @@
 
 import joblib
 
+import torch
 from torch import nn
-from torch.optim import Adam
+from torch.optim import AdamW
 from torchvision.models.resnet import BasicBlock
 import lightning as L
 
@@ -26,7 +27,7 @@ class ResNetBlock(nn.Module):
         return self.block(x)
 
 
-class CustomResNet(L.LightningModule):
+class CustomNetwork(L.LightningModule):
 
     def __init__(self):
         super().__init__()
@@ -37,32 +38,37 @@ class CustomResNet(L.LightningModule):
         self.stem = nn.Sequential(
             nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+            nn.ReLU(inplace=True)
         )
         
         self.resnet_layer = nn.Sequential(
+            ResNetBlock(64, 64, stride=1),
+            ResNetBlock(64, 64, stride=1),
             ResNetBlock(64, 128, stride=2),
+            ResNetBlock(128, 128, stride=1),
             ResNetBlock(128, 256, stride=2),
-            ResNetBlock(256, 512, stride=2)
+            ResNetBlock(256, 256, stride=1),
+            ResNetBlock(256, 512, stride=2),
+            ResNetBlock(512, 512, stride=1)
         )
 
-        self.flatten = nn.Flatten()
+        self.pool = nn.AdaptiveAvgPool2d((2, 2))
 
         self.head = nn.Sequential(
-            nn.Linear(512*4*4, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
+            nn.Flatten(),
+            nn.Linear(512*2*2, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(inplace=True),
             nn.Dropout(0.5),
-            nn.Linear(512, num_classes)
+            nn.Linear(1024, num_classes)
         )
 
-        self.loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)
+        self.loss_fn = nn.CrossEntropyLoss()
 
     def forward(self, x):
         out = self.stem(x)
         out = self.resnet_layer(out)
-        out = self.flatten(out)
+        out = self.pool(out)
         out = self.head(out)
         return out
 
@@ -83,4 +89,4 @@ class CustomResNet(L.LightningModule):
         return val_loss
 
     def configure_optimizers(self):
-        return Adam(self.parameters(), lr=1e-3)
+        return AdamW(self.parameters(), lr=1e-4, weight_decay=1e-4)
