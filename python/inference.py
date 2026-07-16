@@ -8,14 +8,14 @@ import cv2
 import numpy as np
 import torch
 
-from model import CustomResNet
+from model import CustomNetwork
 
 class Inference():
 
     def __init__(self):
         super().__init__()
 
-        self.model = CustomResNet()
+        self.model = CustomNetwork()
         self.model.load_state_dict(torch.load('model/hangulClassifier.pt'))
         self.model.eval()
         self.encoder = joblib.load('data/labelEncoder.bin')
