@@ -5,6 +5,7 @@ import json
 import joblib
 
 from sklearn.model_selection import train_test_split
+import torch
 from torch.utils.data import DataLoader
 from lightning import Trainer
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
@@ -14,11 +15,13 @@ from dataset import CustomDataset
 from model import CustomNetwork
 
 
+torch.set_float32_matmul_precision('high')
+
 data = json.loads(open('data/dataInfo.json','r').read())
 
 train, valid = train_test_split(
     data,
-    test_size=0.05, shuffle=True,
+    test_size=0.1, shuffle=True,
     stratify=[item[1] for item in data]
 )
 

@@ -4,6 +4,7 @@
 import json
 import joblib
 
+from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.data import DataLoader
 from lightning import Trainer
@@ -14,20 +15,31 @@ from dataset import CustomDataset
 from model import CustomNetwork
 
 
+torch.set_float32_matmul_precision('high')
+
 data = json.loads(open('data/dataInfo.json','r').read())
 
-dataset = CustomDataset(data)
-dataloader = DataLoader(dataset, batch_size=32, num_workers=8)
+train, valid = train_test_split(
+    data,
+    test_size=0.03, shuffle=True,
+    stratify=[item[1] for item in data]
+)
+
+train_dataset = CustomDataset(train)
+valid_dataset = CustomDataset(valid)
+train_dataloader = DataLoader(train_dataset, batch_size=32, num_workers=8)
+valid_dataloader = DataLoader(valid_dataset, batch_size=32, num_workers=8)
 
 model = CustomNetwork()
 trainer = Trainer(
-	max_epochs=50, accelerator='gpu',
+	max_epochs=100, accelerator='gpu',
 	logger=False, enable_checkpointing=False,
 	callbacks=[
-        EarlyStopping(monitor='train_loss', patience=10),
+        EarlyStopping(monitor='val_loss', patience=10),
         RichProgressBar()
     ]
 )
-trainer.fit(model, dataloader)
+trainer.fit(model, train_dataloader, valid_dataloader)
+
 
 torch.save(model.state_dict(), 'model/hangulClassifier.pt')
