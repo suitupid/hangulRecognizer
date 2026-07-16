@@ -75,6 +75,9 @@ function tool_pencil() {
 }
 
 function doEvent(event) {
+    if(event.type === "touchstart" || event.type === "touchmove") {
+        event.preventDefault();
+    }
     if( event.offsetX || event.offsetX == 0 ) {
         event._x = event.offsetX;
         event._y = event.offsetY;
