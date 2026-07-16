@@ -10,6 +10,9 @@ import torch
 
 from model import CustomNetwork
 
+
+torch.backends.mkldnn.enabled = False
+
 class Inference():
 
     def __init__(self):
